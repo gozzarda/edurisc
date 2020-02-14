@@ -7,22 +7,22 @@ By convention, any read from `r0` will always return 0, regardless of what write
 Additionally, `rF` is an alias for `PC`, the address in memory of the current instruction.
 
 ## Instruction Set
-- `0x0`: `ADD`
-- `0x1`: `SUB`
-- `0x2`: `MUL`
-- `0x3`: `AND`
-- `0x4`: `OR`
-- `0x5`: `NAND`
-- `0x6`: `XOR`
-- `0x7`: `SLL` (Shift Left Logical)
-- `0x8`: `SRL` (Shift Right Logical)
-- `0x9`: `SRA` (Shift Right Arithmetic)
-- `0xA`: `MOVLI` (Move Lower Immediate)
-- `0xB`: `MOVUI` (Move Upper Immediate)
-- `0xC`: `JRI` (Jump Relative Immediate)
-- `0xD`: `JAC` (Jump Absolute Conditional)
-- `0xC`: `MEM` (Memory Access)
-- `0xF`: `SYS` (System Call)
+- [`0x0`: `ADD`](#0x0-add)
+- [`0x1`: `SUB`](#0x1-sub)
+- [`0x2`: `MUL`](#0x2-mul)
+- [`0x3`: `AND`](#0x3-and)
+- [`0x4`: `OR`](#0x4-or)
+- [`0x5`: `NAND`](#0x5-nad)
+- [`0x6`: `XOR`](#0x6-xor)
+- [`0x7`: `SLL` (Shift Left Logical)](#0x7-sll-shift-left-logical)
+- [`0x8`: `SRL` (Shift Right Logical)](#0x8-srl-shift-right-logical)
+- [`0x9`: `SRA` (Shift Right Arithmetic)](#0x9-sra-shift-right-arithmetic)
+- [`0xA`: `MOVLI` (Move Lower Immediate)](#0xa-movli-move-lower-immediate)
+- [`0xB`: `MOVUI` (Move Upper Immediate)](#0xb-movui-move-upper-immediate)
+- [`0xC`: `JRI` (Jump Relative Immediate)](#0xc-jri-jump-relative-immediate)
+- [`0xD`: `JAC` (Jump Absolute Conditional)](#0xd-jac-jump-absolute-conditional)
+- [`0xE`: `MEM` (Memory Access)](#0xe-mem-memory-access)
+- [`0xF`: `SYS` (System Call)](#0xf-sys-system-call)
 
 Any data buses that are specified are specifed as left operand, right operand, and output.
 
