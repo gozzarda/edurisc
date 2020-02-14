@@ -1,5 +1,7 @@
 # EduRISC Instruction Set Architecture
+EduRISC is an anacrhonistic RISC system intended for teaching computer theory.
 EduRISC is a 16-bit RISC system with a 16-bit address space of 8-bit values for 32 kiB of memory total.
+Priority is given to ease of understanding while remaining sufficiently practical to give asense of how real processors operate.
 
 ## Registers
 EduRISC provides 16 16-bit registers denoted r0 through rF and indexable by a single nibble.
