@@ -81,7 +81,7 @@ Any data buses that are specified are specifed as left operand, right operand, a
 - Data buses: `rY`, `rZ`, `PC`
 - Where `X` is a 4-bit flag set `0bNZP0`
 - `PC` is only updated if `(N && rY < 0) || (Z && rY == 0) || (P && rY > 0)`
-- Tests `rZ` relative to 0 and jumps if condition is met
+- Tests `rY` relative to 0 and jumps if condition is met
 
 ### `0xE`: `MEM` (Memory Access)
 - `0xEXYZ`
