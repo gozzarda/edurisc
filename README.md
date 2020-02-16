@@ -87,7 +87,7 @@ Any data buses that are specified are specifed as left operand, right operand, a
 - `0xEXYZ`
 - Data buses: `rY`, `rZ`, `rZ`
 - Where `X` is a 4-bit flag set `0bSLE0`:
-	- If `S` is 0, the operation is a `LOAD`: `rZ = mem[rY] & (mem[rY+1] << 8)`
+	- If `S` is 0, the operation is a `LOAD`: `rZ = mem[rY] | (mem[rY+1] << 8)`
 		- If `L` is set, load only the lower byte: `rZ = mem[rY]`
 			- If `E` is set, sign-extend: `rZ = mem[rY] + mem[rY][7] * 0xFF00`
 	- If `S` is 1, the operation is a `STORE`: `mem[rY] = rZ[0..7]`, `mem[rY+1] = rZ[8..15]`
