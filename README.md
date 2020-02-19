@@ -1,12 +1,28 @@
 # EduRISC Instruction Set Architecture
-EduRISC is an anacrhonistic RISC system intended for teaching computer theory.
-EduRISC is a 16-bit RISC system with a 16-bit address space of 8-bit values for 32 kiB of memory total.
-Priority is given to ease of understanding while remaining sufficiently practical to give asense of how real processors operate.
+EduRISC is a RISC system intended for teaching computer theory.
+EduRISC is a 16-bit RISC system with a 16-bit address space of 16-bit words for 32,768 words (64 kiB) of total addressable space.
+Priority is given to ease of understanding while remaining sufficiently practical to give a sense of how real processors operate.
+
+## I/O
+I/O is performed through memory-mapped I/O devices.
+The exact specification and memory location of these devices is beyond the scope of this document.
 
 ## Registers
 EduRISC provides 16 16-bit registers denoted r0 through rF and indexable by a single nibble.
 By convention, any read from `r0` will always return 0, regardless of what writes may have been attempted.
 Additionally, `rF` is an alias for `PC`, the address in memory of the current instruction.
+
+## Data Buses
+In abstract, an EduRISC procressor can be thought of as having four data buses: Instruction, Left Operand, Right Operand, and Output.
+The Instruction, Left, and Right buses contain all the processor-internal information that may be used to complete an instruction.
+The Output bus provides the only method for the instruction modifying the processor's internal state.
+
+## Operation
+Typical operation of an EduRISC machine repeats the following steps:
+1. Load the current instruction from memory at the address stored in `PC`
+  - If the loaded instruction is a `HALT` the processor may halt
+2. Perform the effects of the instruction as detailed below
+3. Increment `PC`
 
 ## Instruction Set
 - [`0x0`: `ADD`](#0x0-add)
@@ -14,17 +30,17 @@ Additionally, `rF` is an alias for `PC`, the address in memory of the current in
 - [`0x2`: `MUL`](#0x2-mul)
 - [`0x3`: `AND`](#0x3-and)
 - [`0x4`: `OR`](#0x4-or)
-- [`0x5`: `NAND`](#0x5-nad)
+- [`0x5`: `NAND`](#0x5-nand)
 - [`0x6`: `XOR`](#0x6-xor)
 - [`0x7`: `SLL` (Shift Left Logical)](#0x7-sll-shift-left-logical)
 - [`0x8`: `SRL` (Shift Right Logical)](#0x8-srl-shift-right-logical)
 - [`0x9`: `SRA` (Shift Right Arithmetic)](#0x9-sra-shift-right-arithmetic)
 - [`0xA`: `MOVLI` (Move Lower Immediate)](#0xa-movli-move-lower-immediate)
 - [`0xB`: `MOVUI` (Move Upper Immediate)](#0xb-movui-move-upper-immediate)
-- [`0xC`: `JRI` (Jump Relative Immediate)](#0xc-jri-jump-relative-immediate)
-- [`0xD`: `JAC` (Jump Absolute Conditional)](#0xd-jac-jump-absolute-conditional)
-- [`0xE`: `MEM` (Memory Access)](#0xe-mem-memory-access)
-- [`0xF`: `SYS` (System Call)](#0xf-sys-system-call)
+- [`0xC`: `JRN` (Jump Relative if Negative)](#0xc-jrn-jump-relative-if-negative)
+- [`0xD`: `JRZ` (Jump Relative if Zero)](#0xd-jrz-jump-relative-if-zero)
+- [`0xE`: `JRP` (Jump Relative if Positive)](#0xe-jrp-jump-relative-if-positive)
+- [`0xF`: `MEM` (Memory Access)](#0xf-mem-memory-access)
 
 Any data buses that are specified are specifed as left operand, right operand, and output.
 
@@ -71,20 +87,24 @@ Any data buses that are specified are specifed as left operand, right operand, a
 - Leaves lower byte unchanged
 - In combination with MOVLI allows setting a register in two instructions
 
-### `0xC`: `JRI` (Jump Relative Immediate)
-- `0xCXYZ`: `PC = PC + SEXT(0xXYZ) << 1`
-- Data buses: `SEXT(0xXYZ)`, `PC`, `PC`
-- Sign extends the lower three nibbles of the instruciton and adds that number of words to the program counter
+### `0xC`: `JRN` (Jump Relative if Negative)
+- `0xCXYZ`: If `rX < 0` then `PC = PC + SEXT(0xYZ)`
+- Data buses: `rX`, `PC`, `PC`
+- In combination with `JRZ` and `JRP` can produce any condition
 
-### `0xD`: `JAC` (Jump Absolute Conditional)
-- `0xDXYZ`: `PC = rZ` (conditional)
-- Data buses: `rY`, `rZ`, `PC`
-- Where `X` is a 4-bit flag set `0bNZP0`
-- `PC` is only updated if `(N && rY < 0) || (Z && rY == 0) || (P && rY > 0)`
-- Tests `rY` relative to 0 and jumps if condition is met
+### `0xD`: `JRZ` (Jump Relative if Zero)
+- `0xDXYZ`: If `rX == 0` then `PC = PC + SEXT(0xYZ)`
+- Data buses: `rX`, `PC`, `PC`
+- `0xD0FF` effects a `HALT`, repeating this instruction indefinitely
+- In combination with `JRN` and `JRP` can produce any condition
 
-### `0xE`: `MEM` (Memory Access)
-- `0xEXYZ`
+### `0xE`: `JRP` (Jump Relative if Positive)
+- `0xEXYZ`: If `rX > 0` then `PC = PC + SEXT(0xYZ)`
+- Data buses: `rX`, `PC`, `PC`
+- In combination with `JRN` and `JRZ` can produce any condition
+			
+### `0xF`: `MEM` (Memory Access)
+- `0xFXYZ`
 - Data buses: `rY`, `rZ`, `rZ`
 - Where `X` is a 4-bit flag set `0bSLE0`:
 	- If `S` is 0, the operation is a `LOAD`: `rZ = mem[rY] | (mem[rY+1] << 8)`
@@ -93,17 +113,3 @@ Any data buses that are specified are specifed as left operand, right operand, a
 	- If `S` is 1, the operation is a `STORE`: `mem[rY] = rZ[0..7]`, `mem[rY+1] = rZ[8..15]`
 		- If `L` is set, store only the lower byte: `mem[rY] = rZ[0..7]`
 			- If `E` is set, sign-extend: `mem[rY] = rZ[0..7]`, `mem[rY+1] = rZ[7] * 0xFF`
-
-### `0xF`: `SYS` (System Call)
-- `0xFXYZ`: Perform system call with id `0xYZ`, providing it a access to `rX`.
-- Data buses: `0xYZ`, `rX`, `rX`
-- This allows for up to 256 system calls
-- Currently this specification proposes four:
-	- `0xFX00`: Suspend until next event
-		- Event is loosely defined as any influence that could free the system from its suspended state, such as IO or timers
-	- `0xFX01`: Put Byte
-		- Send the value stored in the lower byte of `X` out over our output stream
-	- `0xFX02`: Can Read
-		- Sets `rX` to `0` if there is no input waiting on our input stream, or some non-zero value if there is
-	- `0xFX03`: Read Byte
-		- Sets `rX` to the next value in the input stream and progresses the input stream by one byte
