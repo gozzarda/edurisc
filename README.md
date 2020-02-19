@@ -8,7 +8,7 @@ I/O is performed through memory-mapped I/O devices.
 The exact specification and memory location of these devices is beyond the scope of this document.
 
 ## Registers
-EduRISC provides 16 16-bit registers denoted r0 through rF and indexable by a single nibble.
+EduRISC provides 16 16-bit registers denoted `r0` through `rF` and indexable by a single nibble.
 By convention, any read from `r0` will always return 0, regardless of what writes may have been attempted.
 Additionally, `rF` is an alias for `PC`, the address in memory of the current instruction.
 
