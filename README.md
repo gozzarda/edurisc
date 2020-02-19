@@ -106,10 +106,5 @@ Any data buses that are specified are specifed as left operand, right operand, a
 ### `0xF`: `MEM` (Memory Access)
 - `0xFXYZ`
 - Data buses: `rY`, `rZ`, `rZ`
-- Where `X` is a 4-bit flag set `0bSLE0`:
-	- If `S` is 0, the operation is a `LOAD`: `rZ = mem[rY] | (mem[rY+1] << 8)`
-		- If `L` is set, load only the lower byte: `rZ = mem[rY]`
-			- If `E` is set, sign-extend: `rZ = mem[rY] + mem[rY][7] * 0xFF00`
-	- If `S` is 1, the operation is a `STORE`: `mem[rY] = rZ[0..7]`, `mem[rY+1] = rZ[8..15]`
-		- If `L` is set, store only the lower byte: `mem[rY] = rZ[0..7]`
-			- If `E` is set, sign-extend: `mem[rY] = rZ[0..7]`, `mem[rY+1] = rZ[7] * 0xFF`
+- `0xF0YZ` is a `LOAD`: `rZ = mem[rY]`
+- `0xF8YZ` is a `STORE`: `mem[rY] = rZ`
