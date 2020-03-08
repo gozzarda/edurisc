@@ -77,9 +77,9 @@ Any data buses that are specified are specifed as left operand, right operand, a
 - Sign extends
 
 ### `0xA`: `MOVLI` (Move Lower Immediate)
-- `0xAXYZ`: `rX = 0x00YZ`
+- `0xAXYZ`: `rX = SEXT(0xYZ)`
 - Data buses: `0xYZ`, `rX`, `rX`
-- Zeros out upper byte of rX
+- Sign extends to fill upper byte of rX
 
 ### `0xB`: `MOVUI` (Move Upper Immediate)
 - `0xBXYZ`: `rX = 0xYZ00 | (rX & 0x00FF)`
