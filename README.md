@@ -1,4 +1,4 @@
-# EduRISC Instruction Set Architecture
+# EduRISC Instruction Set Architecture (version alpha 0.1)
 EduRISC is a RISC system intended for teaching computer theory.
 EduRISC is a 16-bit RISC system with a 16-bit address space of 16-bit words for 32,768 words (64 kiB) of total addressable space.
 Priority is given to ease of understanding while remaining sufficiently practical to give a sense of how real processors operate.
@@ -27,20 +27,20 @@ Typical operation of an EduRISC machine repeats the following steps:
 ## Instruction Set
 - [`0x0`: `ADD`](#0x0-add)
 - [`0x1`: `SUB`](#0x1-sub)
-- [`0x2`: `MUL`](#0x2-mul)
-- [`0x3`: `AND`](#0x3-and)
-- [`0x4`: `OR`](#0x4-or)
-- [`0x5`: `NAND`](#0x5-nand)
-- [`0x6`: `XOR`](#0x6-xor)
-- [`0x7`: `SLL` (Shift Left Logical)](#0x7-sll-shift-left-logical)
-- [`0x8`: `SRL` (Shift Right Logical)](#0x8-srl-shift-right-logical)
-- [`0x9`: `SRA` (Shift Right Arithmetic)](#0x9-sra-shift-right-arithmetic)
-- [`0xA`: `MOVLI` (Move Lower Immediate)](#0xa-movli-move-lower-immediate)
-- [`0xB`: `MOVUI` (Move Upper Immediate)](#0xb-movui-move-upper-immediate)
-- [`0xC`: `JRN` (Jump Relative if Negative)](#0xc-jrn-jump-relative-if-negative)
-- [`0xD`: `JRZ` (Jump Relative if Zero)](#0xd-jrz-jump-relative-if-zero)
-- [`0xE`: `JRP` (Jump Relative if Positive)](#0xe-jrp-jump-relative-if-positive)
-- [`0xF`: `MEM` (Memory Access)](#0xf-mem-memory-access)
+- [`0x2`: `AND`](#0x2-and)
+- [`0x3`: `OR`](#0x3-or)
+- [`0x4`: `NAND`](#0x4-nand)
+- [`0x5`: `XOR`](#0x5-xor)
+- [`0x6`: `SLL` (Shift Left Logical)](#0x5-sll-shift-left-logical)
+- [`0x7`: `SRA` (Shift Right Arithmetic)](#0x7-sra-shift-right-arithmetic)
+- [`0x8`: `MOVLI` (Move Lower Immediate)](#0x8-movli-move-lower-immediate)
+- [`0x9`: `MOVUI` (Move Upper Immediate)](#0x9-movui-move-upper-immediate)
+- [`0xA`: `JRN` (Jump Relative if Negative)](#0xa-jrn-jump-relative-if-negative)
+- [`0xB`: `JRZ` (Jump Relative if Zero)](#0xb-jrz-jump-relative-if-zero)
+- [`0xC`: `JRP` (Jump Relative if Positive)](#0xc-jrp-jump-relative-if-positive)
+- [`0xD`: Reserved ](#0xd-reserved)
+- [`0xE`: `LOD` (Memory Load)](#0xe-lod-memory-load)
+- [`0xF`: `STR` (Memory Store)](#0xf-str-memory-store)
 
 Any data buses that are specified are specifed as left operand, right operand, and output.
 
@@ -50,61 +50,60 @@ Any data buses that are specified are specifed as left operand, right operand, a
 ### `0x1`: `SUB`
 - `0x1XYZ`: `rX = rY - rZ`
 
-### `0x2`: `MUL`
-- `0x2XYZ`: `rX = rY * rZ`
+### `0x2`: `AND`
+- `0x2XYZ`: `rX = rY & rZ`
 
-### `0x3`: `AND`
-- `0x3XYZ`: `rX = rY & rZ`
+### `0x3`: `OR`
+- `0x3XYZ`: `rX = rY | rZ`
 
-### `0x4`: `OR`
-- `0x4XYZ`: `rX = rY | rZ`
-
-### `0x5`: `NAND`
-- `0x5XYZ`: `rX = ~(rY & rZ)`
+### `0x4`: `NAND`
+- `0x4XYZ`: `rX = ~(rY & rZ)`
 - Provides NOT if given same operand twice
 
-### `0x6`: `XOR`
-- `0x6XYZ`: `rX = rY ^ rZ`
+### `0x5`: `XOR`
+- `0x5XYZ`: `rX = rY ^ rZ`
 
-### `0x7`: `SLL` (Shift Left Logical)
-- `0x7XYZ`: `rX = rY << rZ`
+### `0x6`: `SLL` (Shift Left Logical)
+- `0x6XYZ`: `rX = rY << rZ`
 
-### `0x8`: `SRL` (Shift Right Logical)
-- `0x8XYZ`: `rX = rY >> rZ`
-
-### `0x9`: `SRA` (Shift Right Arithmetic)
-- `0x9XYZ`: `rX = rY >> rZ`
+### `0x7`: `SRA` (Shift Right Arithmetic)
+- `0x7XYZ`: `rX = rY >> rZ`
 - Sign extends
 
-### `0xA`: `MOVLI` (Move Lower Immediate)
-- `0xAXYZ`: `rX = SEXT(0xYZ)`
+### `0x8`: `MOVLI` (Move Lower Immediate)
+- `0x8XYZ`: `rX = SEXT(0xYZ)`
 - Data buses: `0xYZ`, `rX`, `rX`
 - Sign extends to fill upper byte of rX
 
-### `0xB`: `MOVUI` (Move Upper Immediate)
-- `0xBXYZ`: `rX = 0xYZ00 | (rX & 0x00FF)`
+### `0x9`: `MOVUI` (Move Upper Immediate)
+- `0x9XYZ`: `rX = 0xYZ00 | (rX & 0x00FF)`
 - Data buses: `0xYZ`, `rX`, `rX`
 - Leaves lower byte unchanged
 - In combination with MOVLI allows setting a register in two instructions
 
-### `0xC`: `JRN` (Jump Relative if Negative)
-- `0xCXYZ`: If `rX < 0` then `PC = PC + SEXT(0xYZ)`
+### `0xA`: `JRN` (Jump Relative if Negative)
+- `0xAXYZ`: If `rX < 0` then `PC = PC + SEXT(0xYZ)`
 - Data buses: `rX`, `PC`, `PC`
 - In combination with `JRZ` and `JRP` can produce any condition
 
-### `0xD`: `JRZ` (Jump Relative if Zero)
-- `0xDXYZ`: If `rX == 0` then `PC = PC + SEXT(0xYZ)`
+### `0xB`: `JRZ` (Jump Relative if Zero)
+- `0xBXYZ`: If `rX == 0` then `PC = PC + SEXT(0xYZ)`
 - Data buses: `rX`, `PC`, `PC`
 - `0xD0FF` effects a `HALT`, repeating this instruction indefinitely
 - In combination with `JRN` and `JRP` can produce any condition
 
-### `0xE`: `JRP` (Jump Relative if Positive)
-- `0xEXYZ`: If `rX > 0` then `PC = PC + SEXT(0xYZ)`
+### `0xC`: `JRP` (Jump Relative if Positive)
+- `0xCXYZ`: If `rX > 0` then `PC = PC + SEXT(0xYZ)`
 - Data buses: `rX`, `PC`, `PC`
 - In combination with `JRN` and `JRZ` can produce any condition
-			
-### `0xF`: `MEM` (Memory Access)
-- `0xFXYZ`
+
+### `0xD`: Reserved
+- Reserved for future use
+
+### `0xE`: `LOD` (Memory Load)
+- `0xEXYZ`: `rz = mem[rY]`
 - Data buses: `rY`, `rZ`, `rZ`
-- `0xF0YZ` is a `LOAD`: `rZ = mem[rY]`
-- `0xF8YZ` is a `STORE`: `mem[rY] = rZ`
+
+### `0xF`: `STR` (Memory Store)
+- `0xFXYZ`: `mem[rY] = rZ`
+- Data buses: `rY`, `rZ`, `rZ`
