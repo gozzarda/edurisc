@@ -20,9 +20,9 @@ The Output bus provides the only method for the instruction modifying the proces
 ## Operation
 Typical operation of an EduRISC machine repeats the following steps:
 1. Load the current instruction from memory at the address stored in `PC`
+2. Increment `PC`
+3. Perform the effects of the instruction as detailed below
   - If the loaded instruction is a `HALT` the processor may halt
-2. Perform the effects of the instruction as detailed below
-3. Increment `PC`
 
 ## Instruction Set
 - [`0x0`: `ADD`](#0x0-add)
